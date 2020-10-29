@@ -134,49 +134,15 @@ public class SkipList
 				}
 			}
 		}
-		/*Node tmpNode = new Node(data);
-		origin.insert(tmpNode, 0);//all nodes are on the bottom level
-		int i = 1;
-		while(true)//see if the node gets to a high level
-		{
-			if(rand.nextDouble() < .5)//insert with prob = .5
-				origin.insert(tmpNode, i);
-			else
-				break;
-			i++;
-		}*/
 	}
 	
 	public void delete(int target)
 	{
-		/*System.out.println("Deleting " + target);
-		Node victim = search(target);
-		if(victim == null)
-			return;
-		victim.data = 0;
-		
-		for(int i = 0; i < victim.getHeight(); i++)
-		{
-			origin.refreshAfterDelete(i);
-		}
-		System.out.println();*/
 	}
 	
 	private Node search(int data)
 	{
 		return null;
-		/*Node result = origin;
-		for(int i = result.getHeight() - 1; i >= 0; i--)//go through the levels (top to bottom) performing a search on each level for the desired data point.
-		{
-			result = origin.search(data, i);
-			if(result != null)
-			{
-				System.out.println("Found " + data + " at level " + i + ", so stopped\n");
-				break;
-			}
-		}
-		
-		return result;*/
 	}
 	
 	public Node findTallerPrev(Node start)
