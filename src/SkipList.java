@@ -44,11 +44,8 @@ public class SkipList
 				}
 				else//level = 0
 				{
-					/*if(curr.getData() < data || data < curr.getNext(level).getData())//inserts at the end/very beginning of the skip list
-					{*/
-						doInsert(tmp, curr);
-						return;
-					//}
+					doInsert(tmp, curr);
+					return;
 				}
 			}
 			else
