@@ -10,18 +10,31 @@ public class Node
 	{
 		this.data = data;
 		next = new ArrayList<>();
+		next.add(this);
 	}
 	
 	public Node getNext(int level)
 	{
-		if(next.size() == 0)
-			return this;
-		return next.get(level);
+		try
+		{
+			return next.get(level);
+		}
+		catch(IndexOutOfBoundsException ex)
+		{
+			return null;
+		}
 	}
 	
 	public void setNext(Node data, int level)
 	{
-		next.add(level, data);
+		if(next.size() == level)
+		{
+			next.add(level, data);
+		}
+		else
+		{
+			next.set(level, data);
+		}
 	}
 	
 	public int getHeight()

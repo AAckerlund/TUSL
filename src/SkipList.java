@@ -23,8 +23,15 @@ public class SkipList
 		while(true)//iterate through the list and search for where to insert
 		{
 			if(curr.getData() == data)//node already exists
+			{
+				System.out.println(data + " already exists");
 				return;
-			if(curr.getData() < data && curr.getNext(level).getData() > data)//data is between curr and curr.getNext()
+			}
+			if(curr.getNext(level) == null)
+			{
+				level--;
+			}
+			else if(curr.getData() < data && curr.getNext(level).getData() > data)//data is between curr and curr.getNext()
 			{
 				if(level == 0)//insert between curr and curr.next
 				{
@@ -64,24 +71,31 @@ public class SkipList
 		Random r = new Random();
 		//determine node height and set all nexts
 		toInsert.setNext(previous.getNext(0), 0);//all nodes must be in the bottom level
-		previous.setNext(toInsert, 0);
 		toInsert.setPrev(previous);
+		
+		previous.getNext(0).setPrev(toInsert);
+		previous.setNext(toInsert, 0);
+		
 		int tmpLevel = 1;
 		while(true)
 		{
 			if(r.nextInt(2) == 1)//50% chance to increase height
 			{
-				if(toInsert.getHeight() > previous.getHeight())
+				if(previous == null)
 				{
-					Node prev = findTallerPrev(previous);
-					if(prev == null)//no other node has reached this height
+					toInsert.setNext(toInsert, tmpLevel);
+				}
+				else if(toInsert.getHeight() >= previous.getHeight())
+				{
+					previous = findTallerPrev(previous);
+					if(previous == null)//no other node has reached this height
 					{
 						toInsert.setNext(toInsert, tmpLevel);
 					}
 					else
 					{
-						toInsert.setNext(prev.getNext(tmpLevel), tmpLevel);
-						prev.setNext(toInsert, tmpLevel);
+						toInsert.setNext(previous.getNext(tmpLevel), tmpLevel);
+						previous.setNext(toInsert, tmpLevel);
 					}
 				}
 				else
@@ -96,6 +110,7 @@ public class SkipList
 			}
 			tmpLevel++;
 		}
+		System.out.println("height " + (tmpLevel-1) + " reached");
 	}
 	
 	public void delete(int target)
@@ -126,7 +141,7 @@ public class SkipList
 		Node cur = origin;
 		do
 		{
-			System.out.println(cur.getData() + " has " + cur.getHeight() + " height");
+			System.out.println(cur.getData() + " reaches " + (cur.getHeight()-1) + " height");
 			cur = cur.getNext(0);
 		}while(cur != origin);
 	}
