@@ -4,10 +4,13 @@ public class Driver
 	public Driver()
 	{
 		sl = new SkipList();
+		int[] nums = {5, 8, 3};
 		for(int i = 1; i < 10; i++)
 		{
-			sl.insert(i);
-			System.out.println("inserted num " + i);
+			int pick = (int)(Math.random()*10);
+			System.out.println("inserting num " + pick);
+			sl.insert(pick);
+			System.out.println("inserted num " + pick);
 		}
 		sl.print();
 	}

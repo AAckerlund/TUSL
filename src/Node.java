@@ -14,6 +14,8 @@ public class Node
 	
 	public Node getNext(int level)
 	{
+		if(next.size() == 0)
+			return this;
 		return next.get(level);
 	}
 	

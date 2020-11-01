@@ -12,105 +12,23 @@ public class SkipList
 	public void insert(int data)
 	{
 		Node tmp = new Node(data);
-		if(origin == null)
+		if(origin == null)//the skip list is empty
 		{
-			Random r = new Random();
-			tmp.setNext(tmp, 0);//all nodes must be in the bottom level
-			tmp.setPrev(tmp);
-			int tmpLevel = 1;
-			while(true)
-			{
-				if(r.nextInt(2) == 1)
-				{
-					tmp.setNext(tmp, tmpLevel);
-				}
-				else
-				{
-					break;
-				}
-				tmpLevel++;
-			}
+			doInsert(tmp, tmp);
 			origin = tmp;
 			return;
 		}
 		Node curr = origin;
 		int level = curr.getHeight()-1;//height list is 0 indexed so subtract 1
-		if(curr.getNext(0) == curr)//only 1 node in the list
-		{
-			Random r = new Random();
-			tmp.setNext(curr, 0);//all nodes must be in the bottom level
-			curr.setNext(tmp, 0);
-			
-			tmp.setPrev(curr);
-			curr.setPrev(tmp);
-			int tmpLevel = 1;
-			while(true)
-			{
-				if(r.nextInt(2) == 1)
-				{
-					if(tmp.getHeight() > curr.getHeight())
-					{
-						tmp.setNext(tmp, tmpLevel);
-					}
-					else
-					{
-						tmp.setNext(curr.getNext(tmpLevel), tmpLevel);
-						curr.setNext(tmp, tmpLevel);
-						tmp.setPrev(curr);
-					}
-				}
-				else
-				{
-					break;
-				}
-				tmpLevel++;
-			}
-			return;
-		}
-		while(curr != null)
+		while(true)//iterate through the list and search for where to insert
 		{
 			if(curr.getData() == data)//node already exists
 				return;
-			if(curr.getData() < data && curr.getNext(level).getData() > data)
+			if(curr.getData() < data && curr.getNext(level).getData() > data)//data is between curr and curr.getNext()
 			{
 				if(level == 0)//insert between curr and curr.next
 				{
-					//determine node height and set all nexts
-					Random r = new Random();
-					tmp.setNext(curr.getNext(0), 0);//all nodes must be in the bottom level
-					curr.setNext(tmp, 0);
-					int tmpLevel = 1;
-					while(true)
-					{
-						if(r.nextInt(2) == 1)//50% chance to increase height
-						{
-							if(tmp.getHeight() > curr.getHeight())
-							{
-								Node prev = findTallerPrev(curr);
-								if(prev == null)//no other node has reached this height
-								{
-									tmp.setNext(tmp, tmpLevel);
-								}
-								else
-								{
-									tmp.setNext(prev.getNext(tmpLevel), tmpLevel);
-									prev.setNext(tmp, tmpLevel);
-									tmp.setPrev(prev);
-								}
-							}
-							else
-							{
-								tmp.setNext(curr.getNext(tmpLevel), tmpLevel);
-								curr.setNext(tmp, tmpLevel);
-								tmp.setPrev(curr);
-							}
-						}
-						else
-						{
-							break;
-						}
-						tmpLevel++;
-					}
+					doInsert(tmp, curr);
 					return;
 				}
 				else//not on the bottom level, so go down a level and keep looking
@@ -118,21 +36,68 @@ public class SkipList
 					level--;
 				}
 			}
-			else
+			else if((curr.getData() < data || curr.getNext(level).getData() > data) && curr.getNext(level).getData() <= curr.getData())//data is greater than greatest node or less than smallest node and curr.getNext() loops back to the start of the list
 			{
-				if(curr.getNext(level) == null)
+				if(level > 0)
 				{
-					if(level > 0)
-					{
-						level--;
-						curr = curr.getNext(level);
-					}
-					else//level = 0, we are at the end of the list
-					{
-						break;
-					}
+					level--;
+				}
+				else//level = 0
+				{
+					/*if(curr.getData() < data || data < curr.getNext(level).getData())//inserts at the end/very beginning of the skip list
+					{*/
+						doInsert(tmp, curr);
+						return;
+					//}
 				}
 			}
+			else
+			{
+				while(curr == curr.getNext(level))
+				{
+					level--;
+				}
+				curr = curr.getNext(level);
+			}
+		}
+	}
+	
+	public void doInsert(Node toInsert, Node previous)
+	{
+		Random r = new Random();
+		//determine node height and set all nexts
+		toInsert.setNext(previous.getNext(0), 0);//all nodes must be in the bottom level
+		previous.setNext(toInsert, 0);
+		toInsert.setPrev(previous);
+		int tmpLevel = 1;
+		while(true)
+		{
+			if(r.nextInt(2) == 1)//50% chance to increase height
+			{
+				if(toInsert.getHeight() > previous.getHeight())
+				{
+					Node prev = findTallerPrev(previous);
+					if(prev == null)//no other node has reached this height
+					{
+						toInsert.setNext(toInsert, tmpLevel);
+					}
+					else
+					{
+						toInsert.setNext(prev.getNext(tmpLevel), tmpLevel);
+						prev.setNext(toInsert, tmpLevel);
+					}
+				}
+				else
+				{
+					toInsert.setNext(previous.getNext(tmpLevel), tmpLevel);
+					previous.setNext(toInsert, tmpLevel);
+				}
+			}
+			else
+			{
+				break;
+			}
+			tmpLevel++;
 		}
 	}
 	
