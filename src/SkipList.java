@@ -117,9 +117,53 @@ public class SkipList
 	{
 	}
 	
-	private Node search(int data)
+	public Node search(int data)
 	{
-		return null;
+		if(origin == null)//the skip list is empty
+		{
+			return null;
+		}
+		Node curr = origin;
+		int level = curr.getHeight()-1;//height list is 0 indexed so subtract 1
+		do//iterate through the list and search for where to insert
+		{
+			if(curr.getData() == data)//found node
+			{
+				return curr;
+			}
+			if(curr.getNext(level) == null)//nothing else on this height, so drop down a level and keep checking
+			{
+				level--;
+			}
+			else if(curr.getData() < data && curr.getNext(level).getData() > data)//data is between curr and curr.getNext()
+			{
+				if(level > 0)//try and drop down a level, if we can't return null
+					level--;
+				else
+					return null;
+			}
+			else if((curr.getData() < data || curr.getNext(level).getData() > data) && curr.getNext(level).getData() <= curr.getData())//data is greater than greatest node or less than smallest node and curr.getNext() loops back to the start of the list
+			{
+				if(level > 0)
+					level--;
+				else
+					return null;
+			}
+			else
+			{
+				while(curr == curr.getNext(level))//no point in checking the same node multiple times so drop down levels until node.next() gives a different node.
+				{
+					level--;
+				}
+				curr = curr.getNext(level);
+			}
+		}while(curr != origin);
+		return null;//no such element exists
+	}
+	
+	public boolean contains(int data)
+	{
+		return search(data) != null;
 	}
 	
 	public Node findTallerPrev(Node start)
