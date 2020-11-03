@@ -66,7 +66,7 @@ public class SkipList
 		}
 	}
 	
-	public void doInsert(Node toInsert, Node previous)
+	private void doInsert(Node toInsert, Node previous)
 	{
 		Random r = new Random();
 		//determine node height and set all nexts
@@ -113,8 +113,67 @@ public class SkipList
 		System.out.println("height " + (tmpLevel-1) + " reached");
 	}
 	
-	public void delete(int target)
+	public boolean delete(int target)
 	{
+		if(origin == null || !contains(target))//the skip list is empty
+		{
+			return false;
+		}
+		Node curr = origin;
+		int level = curr.getHeight()-1;//height list is 0 indexed so subtract 1
+		while(true)//iterate through the list and search for where to insert
+		{
+			System.out.println(curr.getNext(level));
+			if(curr.getNext(level).getData() == target)//node already exists
+			{
+				level = doDelete(curr, curr.getNext(level), level);
+				if(level == 0)
+					return true;
+			}
+			if(curr.getNext(level) == null)
+			{
+				level--;
+			}
+			else if(curr.getData() < target && curr.getNext(level).getData() > target)//data is between curr and curr.getNext()
+			{
+				if(level >= 0)//insert between curr and curr.next
+				{
+					level--;
+				}
+			}
+			else if((curr.getData() < target || curr.getNext(level).getData() > target) && curr.getNext(level).getData() <= curr.getData())//data is greater than greatest node or less than smallest node and curr.getNext() loops back to the start of the list
+			{
+				if(level > 0)
+				{
+					level--;
+				}
+			}
+			else
+			{
+				while(curr == curr.getNext(level))
+				{
+					level--;
+				}
+				curr = curr.getNext(level);
+			}
+		}
+	}
+	
+	private int doDelete(Node previous, Node toDelete, int height)
+	{
+		do
+		{
+			previous.setNext(toDelete.getNext(height), height);
+			height--;
+		}while(previous.getNext(height) == toDelete || height >= 0);
+		height++;
+		if(height == 0)
+		{
+			toDelete.getNext(0).setPrev(previous);
+			if(origin == toDelete)//change the origin node if it would be deleted
+				origin = previous;
+		}
+		return height;
 	}
 	
 	public Node search(int data)
