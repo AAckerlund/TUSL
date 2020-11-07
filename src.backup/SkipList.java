@@ -110,14 +110,6 @@ public class SkipList
 			}
 			tmpLevel++;
 		}
-		if(origin == null)
-		{
-			origin = toInsert;
-		}
-		else if(toInsert.getData() < origin.getData())
-		{
-			origin = toInsert;
-		}
 		System.out.println("height " + (tmpLevel-1) + " reached");
 	}
 	
@@ -131,7 +123,7 @@ public class SkipList
 		int level = curr.getHeight()-1;//height list is 0 indexed so subtract 1
 		while(true)//iterate through the list and search for where to insert
 		{
-			//System.out.println(curr.getNext(level));
+			System.out.println(curr.getNext(level));
 			if(curr.getNext(level).getData() == target)//node already exists
 			{
 				level = doDelete(curr, curr.getNext(level), level);
