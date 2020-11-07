@@ -15,7 +15,6 @@ public class SkipList
 		if(origin == null)//the skip list is empty
 		{
 			doInsert(tmp, tmp);
-			//origin = tmp;
 			return;
 		}
 		Node curr = origin;
