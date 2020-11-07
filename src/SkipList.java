@@ -11,7 +11,8 @@ public class SkipList
 	
 	public void insert(int data)
 	{
-		Node tmp = new Node(data);
+		search(data, 1);
+		/*Node tmp = new Node(data);
 		if(origin == null)//the skip list is empty
 		{
 			doInsert(tmp, tmp);
@@ -62,11 +63,13 @@ public class SkipList
 				}
 				curr = curr.getNext(level);
 			}
-		}
+		}*/
 	}
 	
 	private void doInsert(Node toInsert, Node previous)
 	{
+		if(toInsert.getData() == previous.getData())
+			System.out.println(toInsert.getData() + "-----------------------------------------------------------------------");
 		Random r = new Random();
 		//determine node height and set all nexts
 		toInsert.setNext(previous.getNext(0), 0);//all nodes must be in the bottom level
@@ -193,12 +196,16 @@ public class SkipList
 		if(origin == null)//the skip list is empty
 		{
 			if(op == 1)
-				doInsert(new Node(data), new Node(data));
+			{
+				Node tmp = new Node(data);
+				doInsert(tmp, tmp);
+				return null;
+			}
 			return null;
 		}
 		Node curr = origin;
 		int level = curr.getHeight()-1;//height list is 0 indexed so subtract 1
-		do//iterate through the list and search for where to insert
+		while(true)//iterate through the list and search for where to insert
 		{
 			if(curr.getData() == data)//found node
 			{
@@ -244,8 +251,8 @@ public class SkipList
 				}
 				curr = curr.getNext(level);
 			}
-		}while(curr != origin);
-		return null;//no such element exists
+		}
+		//return null;//no such element exists
 	}
 	
 	public boolean contains(int data)
