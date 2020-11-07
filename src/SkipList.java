@@ -12,64 +12,10 @@ public class SkipList
 	public void insert(int data)
 	{
 		search(data, 1);
-		/*Node tmp = new Node(data);
-		if(origin == null)//the skip list is empty
-		{
-			doInsert(tmp, tmp);
-			return;
-		}
-		Node curr = origin;
-		int level = curr.getHeight()-1;//height list is 0 indexed so subtract 1
-		while(true)//iterate through the list and search for where to insert
-		{
-			if(curr.getData() == data)//node already exists
-			{
-				System.out.println(data + " already exists");
-				return;
-			}
-			if(curr.getNext(level) == null)
-			{
-				level--;
-			}
-			else if(curr.getData() < data && curr.getNext(level).getData() > data)//data is between curr and curr.getNext()
-			{
-				if(level == 0)//insert between curr and curr.next
-				{
-					doInsert(tmp, curr);
-					return;
-				}
-				else//not on the bottom level, so go down a level and keep looking
-				{
-					level--;
-				}
-			}
-			else if((curr.getData() < data || curr.getNext(level).getData() > data) && curr.getNext(level).getData() <= curr.getData())//data is greater than greatest node or less than smallest node and curr.getNext() loops back to the start of the list
-			{
-				if(level > 0)
-				{
-					level--;
-				}
-				else//level = 0
-				{
-					doInsert(tmp, curr);
-					return;
-				}
-			}
-			else
-			{
-				while(curr == curr.getNext(level))
-				{
-					level--;
-				}
-				curr = curr.getNext(level);
-			}
-		}*/
 	}
 	
 	private void doInsert(Node toInsert, Node previous)
 	{
-		if(toInsert.getData() == previous.getData())
-			System.out.println(toInsert.getData() + "-----------------------------------------------------------------------");
 		Random r = new Random();
 		//determine node height and set all nexts
 		toInsert.setNext(previous.getNext(0), 0);//all nodes must be in the bottom level
@@ -125,48 +71,7 @@ public class SkipList
 	
 	public boolean delete(int target)
 	{
-		if(origin == null || !contains(target))//the skip list is empty
-		{
-			return false;
-		}
-		Node curr = origin;
-		int level = curr.getHeight()-1;//height list is 0 indexed so subtract 1
-		while(true)//iterate through the list and search for where to insert
-		{
-			//System.out.println(curr.getNext(level));
-			if(curr.getNext(level).getData() == target)//node already exists
-			{
-				level = doDelete(curr, curr.getNext(level), level);
-				if(level == 0)
-					return true;
-			}
-			if(curr.getNext(level) == null)
-			{
-				level--;
-			}
-			else if(curr.getData() < target && curr.getNext(level).getData() > target)//data is between curr and curr.getNext()
-			{
-				if(level >= 0)//insert between curr and curr.next
-				{
-					level--;
-				}
-			}
-			else if((curr.getData() < target || curr.getNext(level).getData() > target) && curr.getNext(level).getData() <= curr.getData())//data is greater than greatest node or less than smallest node and curr.getNext() loops back to the start of the list
-			{
-				if(level > 0)
-				{
-					level--;
-				}
-			}
-			else
-			{
-				while(curr == curr.getNext(level))
-				{
-					level--;
-				}
-				curr = curr.getNext(level);
-			}
-		}
+		return search(target, 2) != null;
 	}
 	
 	private int doDelete(Node previous, Node toDelete, int height)
@@ -175,7 +80,7 @@ public class SkipList
 		{
 			previous.setNext(toDelete.getNext(height), height);
 			height--;
-		}while(previous.getNext(height) == toDelete || height >= 0);
+		}while(previous.getNext(height) == toDelete && height >= 0);
 		height++;
 		if(height == 0)
 		{
@@ -186,7 +91,7 @@ public class SkipList
 		return height;
 	}
 	
-	/*
+	/* op codes
 	op = 0 - searching for a node
 	op = 1 - inserting a node
 	op = 2 - deleting a node
@@ -209,12 +114,23 @@ public class SkipList
 		{
 			if(curr.getData() == data)//found node
 			{
-				if(op == 1)
+				if(op == 0)
+					return curr;
+				else if(op == 1)
 					return null;
 				else if(op == 2)
+				{
+					doDelete(findTallerPrev(curr), curr, level);
+					return curr;
+				}
+			}
+			else if(curr.getNext(level).getData() == data && op == 2)//node already exists
+			{
+				level = doDelete(curr, curr.getNext(level), level);
+				if(level == 0)
 					return curr;
 			}
-			if(curr.getNext(level) == null)//nothing else on this height, so drop down a level and keep checking
+			else if(curr.getNext(level) == null)//nothing else on this height, so drop down a level and keep checking
 			{
 				level--;
 			}
@@ -266,7 +182,7 @@ public class SkipList
 		Node prev = start.getPrev();
 		while(true)
 		{
-			if(prev.getHeight() > height)
+			if(prev.getHeight() >= height)
 				return prev;
 			else if(prev == start)//we have checked everything
 				return null;
