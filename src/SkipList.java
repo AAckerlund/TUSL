@@ -90,7 +90,7 @@ public class SkipList
 		{
 			origin = toInsert;
 		}
-		System.out.println("height " + (tmpLevel-1) + " reached");
+		//System.out.println("height " + (tmpLevel-1) + " reached");
 	}
 	
 	public boolean delete(int target)
@@ -136,6 +136,15 @@ public class SkipList
 		int level = curr.getHeight()-1;//height list is 0 indexed so subtract 1
 		while(true)//iterate through the list and search for where to insert
 		{
+			if(op == 2)
+			{
+				if(curr.getNext(level).getData() == data)//node already exists
+				{
+					level = doDelete(curr, curr.getNext(level), level);
+					if(level == 0)
+						return curr;
+				}
+			}
 			if(curr.getData() == data)//found node
 			{
 				if(op == 0)
@@ -146,15 +155,6 @@ public class SkipList
 				{
 					doDelete(findTallerPrev(curr), curr, level);
 					return curr;
-				}
-			}
-			if(op == 2)
-			{
-				if(curr.getNext(level).getData() == data)//node already exists
-				{
-					level = doDelete(curr, curr.getNext(level), level);
-					if(level == 0)
-						return curr;
 				}
 			}
 			else if(curr.getNext(level) == null)//nothing else on this height, so drop down a level and keep checking
