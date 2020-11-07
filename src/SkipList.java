@@ -9,6 +9,30 @@ public class SkipList
 		origin = null;
 	}
 	
+	public float insertTimed(int data)
+	{
+		float delta = System.nanoTime();
+		insert(data);
+		delta = System.nanoTime() - delta;
+		return delta;
+	}
+	
+	public float deleteTimed(int data)
+	{
+		float delta = System.nanoTime();
+		delete(data);
+		delta = System.nanoTime() - delta;
+		return delta;
+	}
+	
+	public float searchTimed(int data)
+	{
+		float delta = System.nanoTime();
+		search(data, 0);
+		delta = System.nanoTime() - delta;
+		return delta;
+	}
+	
 	public void insert(int data)
 	{
 		search(data, 1);
@@ -124,11 +148,14 @@ public class SkipList
 					return curr;
 				}
 			}
-			else if(curr.getNext(level).getData() == data && op == 2)//node already exists
+			if(op == 2)
 			{
-				level = doDelete(curr, curr.getNext(level), level);
-				if(level == 0)
-					return curr;
+				if(curr.getNext(level).getData() == data)//node already exists
+				{
+					level = doDelete(curr, curr.getNext(level), level);
+					if(level == 0)
+						return curr;
+				}
 			}
 			else if(curr.getNext(level) == null)//nothing else on this height, so drop down a level and keep checking
 			{
