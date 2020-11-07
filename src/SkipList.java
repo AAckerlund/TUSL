@@ -15,7 +15,7 @@ public class SkipList
 		if(origin == null)//the skip list is empty
 		{
 			doInsert(tmp, tmp);
-			origin = tmp;
+			//origin = tmp;
 			return;
 		}
 		Node curr = origin;
@@ -179,7 +179,7 @@ public class SkipList
 		{
 			toDelete.getNext(0).setPrev(previous);
 			if(origin == toDelete)//change the origin node if it would be deleted
-				origin = previous;
+				origin = previous.getNext(0);
 		}
 		return height;
 	}
