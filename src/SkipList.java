@@ -40,6 +40,7 @@ public class SkipList
 	
 	private void doInsert(Node toInsert, Node previous)
 	{
+		System.out.println(toInsert.getData() + ", " + previous.getData());
 		Random r = new Random();
 		//determine node height and set all nexts
 		toInsert.setNext(previous.getNext(0), 0);//all nodes must be in the bottom level
@@ -53,6 +54,8 @@ public class SkipList
 		{
 			if(r.nextInt(2) == 1)//50% chance to increase height
 			{
+				if(toInsert.getData()==6)
+					break;
 				if(previous == null)
 				{
 					toInsert.setNext(toInsert, tmpLevel);
@@ -136,15 +139,6 @@ public class SkipList
 		int level = curr.getHeight()-1;//height list is 0 indexed so subtract 1
 		while(true)//iterate through the list and search for where to insert
 		{
-			if(op == 2)
-			{
-				if(curr.getNext(level).getData() == data)//node already exists
-				{
-					level = doDelete(curr, curr.getNext(level), level);
-					if(level == 0)
-						return curr;
-				}
-			}
 			if(curr.getData() == data)//found node
 			{
 				if(op == 0)
@@ -157,7 +151,18 @@ public class SkipList
 					return curr;
 				}
 			}
-			else if(curr.getNext(level) == null)//nothing else on this height, so drop down a level and keep checking
+			else if(op == 2)
+			{
+				if(curr.getNext(level) == null)
+					level--;
+				else if(curr.getNext(level).getData() == data)//node already exists
+				{
+					level = doDelete(curr, curr.getNext(level), level);
+					if(level == 0)
+						return curr;
+				}
+			}
+			if(curr.getNext(level) == null)//nothing else on this height, so drop down a level and keep checking
 			{
 				level--;
 			}
@@ -170,7 +175,6 @@ public class SkipList
 					if(op == 1)
 					{
 						doInsert(new Node(data), curr);
-						return null;
 					}
 					return null;
 				}
@@ -182,20 +186,19 @@ public class SkipList
 				else//level == 0
 				{
 					if(op == 1)
+					{
 						doInsert(new Node(data), curr);
+					}
 					return null;
 				}
 			}
 			else
 			{
 				while(curr == curr.getNext(level))//no point in checking the same node multiple times so drop down levels until node.next() gives a different node.
-				{
 					level--;
-				}
 				curr = curr.getNext(level);
 			}
 		}
-		//return null;//no such element exists
 	}
 	
 	public boolean contains(int data)
@@ -222,7 +225,17 @@ public class SkipList
 		Node cur = origin;
 		do
 		{
-			System.out.println(cur.getData() + " reaches " + (cur.getHeight()-1) + " height");
+			System.out.println(cur.getData() + " points to " + cur.getHeight() + " elements");
+			for(int i = 0; i < cur.getHeight(); i++)
+			{
+				try
+				{
+					System.out.println("\t" + cur.getNext(i).getData() + " at height " + i);
+				}
+				catch(NullPointerException ingored){}
+			}
+			//System.out.println(cur.getData() + " reaches " + (cur.getHeight()-1) + " height");
+			System.out.println();
 			cur = cur.getNext(0);
 		}while(cur != origin);
 	}
