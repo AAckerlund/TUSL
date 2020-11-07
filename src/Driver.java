@@ -17,7 +17,7 @@ public class Driver
 		sl.print();
 		System.out.println();
 		
-		if(sl.contains(5))//check if a value is in the list
+		if(sl.contains(5))//check if 5 is in the list
 		{
 			System.out.println("5 is in the data set!\n");
 		}
@@ -40,7 +40,7 @@ public class Driver
 			System.out.println();
 		}
 		
-		if(sl.contains(5))//check if a value is in the list
+		if(sl.contains(5))//check if 5 is in the list
 		{
 			System.out.println("5 is in the data set!");
 		}
