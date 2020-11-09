@@ -44,9 +44,9 @@ public class TUSL
 		Random r = new Random();
 		//determine node height and set all nexts
 		toInsert.setNext(previous.getNext(0), 0);//all nodes must be in the bottom level
-		toInsert.setPrev(previous);
+		toInsert.setPrev(previous, 0);
 		
-		previous.getNext(0).setPrev(toInsert);
+		previous.getNext(0).setPrev(toInsert, 0);
 		previous.setNext(toInsert, 0);
 		
 		int tmpLevel = 1;
@@ -54,30 +54,25 @@ public class TUSL
 		{
 			if(r.nextInt(2) == 1)//50% chance to increase height
 			{
-				if(toInsert.getData()==6)
+				if(toInsert.getData() == 6)
 					break;
-				if(previous == null)
+				if(toInsert.getHeight() >= previous.getHeight())
 				{
-					toInsert.setNext(toInsert, tmpLevel);
-				}
-				else if(toInsert.getHeight() >= previous.getHeight())
-				{
-					previous = findTallerPrev(previous);
-					if(previous == null)//no other node has reached this height
+					Node firstPrev = previous;
+					do
 					{
-						toInsert.setNext(toInsert, tmpLevel);
-					}
-					else
-					{
-						toInsert.setNext(previous.getNext(tmpLevel), tmpLevel);
-						previous.setNext(toInsert, tmpLevel);
-					}
+						previous = previous.getPrev(tmpLevel-1);
+					}while(toInsert.getHeight() >= previous.getHeight() && previous != firstPrev);
+					if(previous == firstPrev)//nothing taller was found so link the node to itself
+						previous = toInsert;
+					
 				}
-				else
-				{
-					toInsert.setNext(previous.getNext(tmpLevel), tmpLevel);
-					previous.setNext(toInsert, tmpLevel);
-				}
+				toInsert.setNext(previous.getNext(tmpLevel), tmpLevel);
+				toInsert.setPrev(previous, tmpLevel);
+				
+				previous.setNext(toInsert, tmpLevel);
+				
+				previous.getNext(tmpLevel).setPrev(toInsert, tmpLevel);
 			}
 			else
 			{
@@ -101,21 +96,22 @@ public class TUSL
 		return search(target, 2) != null;
 	}
 	
-	private int doDelete(Node previous, Node toDelete, int height)
+	private void doDelete(Node previous, Node toDelete, int height)
 	{
 		do
 		{
 			previous.setNext(toDelete.getNext(height), height);
+			toDelete.getNext(height).setPrev(previous, height);
 			height--;
 		}while(previous.getNext(height) == toDelete && height >= 0);
 		height++;
 		if(height == 0)
 		{
-			toDelete.getNext(0).setPrev(previous);
+			toDelete.getNext(0).setPrev(previous, 0);
+			previous.setNext(toDelete.getNext(0), 0);
 			if(origin == toDelete)//change the origin node if it would be deleted
 				origin = previous.getNext(0);
 		}
-		return height;
 	}
 	
 	/* op codes
@@ -147,22 +143,11 @@ public class TUSL
 					return null;
 				else if(op == 2)
 				{
-					doDelete(findTallerPrev(curr), curr, level);
+					doDelete(curr.getPrev(level), curr, level);
 					return curr;
 				}
 			}
-			else if(op == 2)
-			{
-				if(curr.getNext(level) == null)
-					level--;
-				else if(curr.getNext(level).getData() == data)//node already exists
-				{
-					level = doDelete(curr, curr.getNext(level), level);
-					if(level == 0)
-						return curr;
-				}
-			}
-			if(curr.getNext(level) == null)//nothing else on this height, so drop down a level and keep checking
+			else if(curr.getNext(level) == null)//nothing else on this height, so drop down a level and keep checking
 			{
 				level--;
 			}
@@ -206,7 +191,7 @@ public class TUSL
 		return search(data, 0) != null;
 	}
 	
-	public Node findTallerPrev(Node start)
+	/*public Node findTallerPrev(Node start)
 	{
 		int height = start.getHeight();
 		Node prev = start.getPrev();
@@ -218,7 +203,7 @@ public class TUSL
 				return null;
 			prev = prev.getPrev();
 		}
-	}
+	}*/
 	
 	public void print()
 	{
@@ -232,7 +217,7 @@ public class TUSL
 				{
 					System.out.println("\t" + cur.getNext(i).getData() + " at height " + i);
 				}
-				catch(NullPointerException ingored){}
+				catch(NullPointerException ignored){}
 			}
 			//System.out.println(cur.getData() + " reaches " + (cur.getHeight()-1) + " height");
 			System.out.println();

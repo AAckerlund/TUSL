@@ -4,13 +4,15 @@ public class Node
 {
 	private int data;
 	private ArrayList<Node> next;
-	private Node prev;//This is required to allow height to not have a predetermined max
+	private ArrayList<Node> prev;//Makes many operations easier, the list is never traversed backwards
 	
 	public Node(int data)
 	{
 		this.data = data;
 		next = new ArrayList<>();
 		next.add(this);
+		prev = new ArrayList<>();
+		prev.add(this);
 	}
 	
 	public Node getNext(int level)
@@ -47,13 +49,27 @@ public class Node
 		return data;
 	}
 	
-	public void setPrev(Node n)
+	public void setPrev(Node n, int level)
 	{
-		prev = n;
+		if(prev.size() == level)
+		{
+			prev.add(level, n);
+		}
+		else
+		{
+			prev.set(level, n);
+		}
 	}
 	
-	public Node getPrev()
+	public Node getPrev(int level)
 	{
-		return prev;
+		try
+		{
+			return prev.get(level);
+		}
+		catch(IndexOutOfBoundsException ex)
+		{
+			return null;
+		}
 	}
 }
