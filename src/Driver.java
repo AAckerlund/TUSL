@@ -1,19 +1,17 @@
 public class Driver
 {
-	SkipList sl;
+	TUSL sl;
 	
 	public Driver()
 	{
-		sl = new SkipList();
+		sl = new TUSL();
 		int[] nums = {6, 7, 3, 2, 4, 1, 9, 0, 5, 8};
-		float[] times = new float[nums.length];
 		
 		for(int i = 0; i < nums.length; i++)//a bunch of inserts
 		{
-			int pick = nums[i];//(int)(Math.random()*10);
+			int pick = nums[i];
 			System.out.println("\ninserting num " + pick);
-			times[i] = sl.insertTimed(pick);
-			//System.out.println(times[i]);
+			sl.insert(pick);
 			sl.print();
 		}
 		

@@ -88,6 +88,7 @@ public class TUSL
 		{
 			origin = toInsert;
 		}
+		newOrigin();
 		//System.out.println("height " + (tmpLevel-1) + " reached");
 	}
 	
@@ -112,6 +113,8 @@ public class TUSL
 			if(origin == toDelete)//change the origin node if it would be deleted
 				origin = previous.getNext(0);
 		}
+		newOrigin();
+		heightAdjust(origin);
 	}
 	
 	/* op codes
@@ -138,9 +141,17 @@ public class TUSL
 			if(curr.getData() == data)//found node
 			{
 				if(op == 0)
+				{
+					newOrigin();
+					heightAdjust(origin);
 					return curr;
+				}
 				else if(op == 1)
+				{
+					newOrigin();
+					heightAdjust(origin, curr.getHeight());
 					return null;
+				}
 				else if(op == 2)
 				{
 					doDelete(curr.getPrev(level), curr, level);
@@ -191,20 +202,6 @@ public class TUSL
 		return search(data, 0) != null;
 	}
 	
-	/*public Node findTallerPrev(Node start)
-	{
-		int height = start.getHeight();
-		Node prev = start.getPrev();
-		while(true)
-		{
-			if(prev.getHeight() >= height)
-				return prev;
-			else if(prev == start)//we have checked everything
-				return null;
-			prev = prev.getPrev();
-		}
-	}*/
-	
 	public void print()
 	{
 		Node cur = origin;
@@ -223,5 +220,101 @@ public class TUSL
 			System.out.println();
 			cur = cur.getNext(0);
 		}while(cur != origin);
+	}
+	
+	public void heightAdjust(Node n)
+	{
+		int newHeight = 1;
+		Random r = new Random();
+		while(true)
+		{
+			if(r.nextInt(2) == 1)//50% chance to increase height
+			{
+				if(newHeight >= n.getHeight())
+				{
+					Node previous = n.getPrev(newHeight-1);
+					while(previous.getHeight() < newHeight && previous != n)//find a taller previous node
+					{
+						previous.getPrev(newHeight-1);
+					}
+					
+					n.setPrev(previous, newHeight);
+					previous.getNext(newHeight).setPrev(n, newHeight);
+					
+					Node next = n.getNext(newHeight-1);
+					while(next.getHeight() < newHeight && next != n)
+					{
+						next = next.getNext(newHeight-1);
+					}
+					n.setNext(next, newHeight);
+					previous.setNext(n, newHeight);
+				}
+			}
+			else
+			{
+				break;
+			}
+			newHeight++;
+		}
+		if(origin == null)
+		{
+			origin = n;
+		}
+	}
+	
+	public void heightAdjust(Node n, int height)
+	{
+		if(n.getHeight() > height)
+		{
+			for(int i = n.getHeight()-1; i > height; i--)
+			{
+				n.getPrev(i).setNext(n.getNext(i), i);
+				n.getNext(i).setPrev(n.getPrev(i), i);
+				
+				n.removeNext();
+			}
+		}
+		else
+		{
+			for(int i = 0; i < height; i++)
+			{
+				if(i >= n.getHeight())
+				{
+					Node previous = n.getPrev(i - 1);
+					while(previous.getHeight() < i && previous != n)//find a taller previous node
+					{
+						previous.getPrev(i - 1);
+					}
+					
+					n.setPrev(previous, i);
+					previous.getNext(i).setPrev(n, i);
+					
+					Node next = n.getNext(i - 1);
+					while(next.getHeight() < i && next != n)
+					{
+						next = next.getNext(i - 1);
+					}
+					n.setNext(next, i);
+					previous.setNext(n, i);
+				}
+				else
+				{
+					break;
+				}
+			}
+		}
+		if(origin == null)
+		{
+			origin = n;
+		}
+	}
+	
+	public void newOrigin()
+	{
+		Random r = new Random();
+		while(r.nextInt(10) < 9)//90% chance to move to a new origin node
+		{
+			origin = origin.getNext(0);
+		}
 	}
 }

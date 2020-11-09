@@ -72,4 +72,10 @@ public class Node
 			return null;
 		}
 	}
+	
+	public void removeNext()
+	{
+		next.remove(next.size()-1);
+		prev.remove(prev.size()-1);
+	}
 }

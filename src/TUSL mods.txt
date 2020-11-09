@@ -1,0 +1,16 @@
+randomly choose origin each time.
+    from current origin, 90% chance to move to the next node and have it be the origin. Stops when the 90% isn't hit.
+
+remove: remove value, find new origin, height adjust the origin.
+
+lookup: return value, find new origin, height adjust origin
+
+insert:
+
+    if node already exists
+        select new origin
+        origin height gets adjusted to node height
+
+    if the node does not exist
+        insert node
+        select new origin
