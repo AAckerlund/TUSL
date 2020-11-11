@@ -40,45 +40,36 @@ public class TUSL
 	
 	private void doInsert(Node toInsert, Node previous)
 	{
-		System.out.println(toInsert.getData() + ", " + previous.getData());
-		Random r = new Random();
+		System.out.println("cur " + toInsert.getData() + ", prev " + previous.getData());
 		//determine node height and set all nexts
+		int level = toInsert.determineHeight();
 		toInsert.setNext(previous.getNext(0), 0);//all nodes must be in the bottom level
 		toInsert.setPrev(previous, 0);
 		
 		previous.getNext(0).setPrev(toInsert, 0);
 		previous.setNext(toInsert, 0);
 		
-		int tmpLevel = 1;
-		while(true)
+		for(int i = 1; i < level; i++)
 		{
-			if(r.nextInt(2) == 1)//50% chance to increase height
+			if(i >= previous.getHeight())
 			{
-				if(toInsert.getData() == 6)
-					break;
-				if(toInsert.getHeight() >= previous.getHeight())
+				Node firstPrev = previous;
+				do
 				{
-					Node firstPrev = previous;
-					do
-					{
-						previous = previous.getPrev(tmpLevel-1);
-					}while(toInsert.getHeight() >= previous.getHeight() && previous != firstPrev);
-					if(previous == firstPrev)//nothing taller was found so link the node to itself
-						previous = toInsert;
+					previous = previous.getPrev(i - 1);
 					
+					System.out.println(previous.getData());
 				}
-				toInsert.setNext(previous.getNext(tmpLevel), tmpLevel);
-				toInsert.setPrev(previous, tmpLevel);
-				
-				previous.setNext(toInsert, tmpLevel);
-				
-				previous.getNext(tmpLevel).setPrev(toInsert, tmpLevel);
+				while(i >= previous.getHeight() && previous != firstPrev);
+				System.out.println("New previous was needed " + previous.getData());
 			}
-			else
-			{
-				break;
-			}
-			tmpLevel++;
+			System.out.println("using " + previous.getData() + " at height " + (i));
+			toInsert.setNext(previous.getNext(i), i);
+			toInsert.setPrev(previous, i);
+			
+			previous.setNext(toInsert, i);
+			
+			previous.getNext(i).setPrev(toInsert, i);
 		}
 		if(origin == null)
 		{
@@ -89,7 +80,7 @@ public class TUSL
 			origin = toInsert;
 		}
 		newOrigin();
-		//System.out.println("height " + (tmpLevel-1) + " reached");
+		System.out.println("height " + level + " reached");
 	}
 	
 	public boolean delete(int target)
@@ -202,35 +193,17 @@ public class TUSL
 		return search(data, 0) != null;
 	}
 	
-	public void print()
-	{
-		Node cur = origin;
-		do
-		{
-			System.out.println(cur.getData() + " points to " + cur.getHeight() + " elements");
-			for(int i = 0; i < cur.getHeight(); i++)
-			{
-				try
-				{
-					System.out.println("\t" + cur.getNext(i).getData() + " at height " + i);
-				}
-				catch(NullPointerException ignored){}
-			}
-			//System.out.println(cur.getData() + " reaches " + (cur.getHeight()-1) + " height");
-			System.out.println();
-			cur = cur.getNext(0);
-		}while(cur != origin);
-	}
-	
 	public void heightAdjust(Node n)
 	{
+		System.out.println("Adjusting " + n.getData());
 		int newHeight = 1;
 		Random r = new Random();
 		while(true)
 		{
+			System.out.println(newHeight);
 			if(r.nextInt(2) == 1)//50% chance to increase height
 			{
-				if(newHeight >= n.getHeight())
+				if(newHeight > n.getHeight())
 				{
 					Node previous = n.getPrev(newHeight-1);
 					while(previous.getHeight() < newHeight && previous != n)//find a taller previous node
@@ -248,6 +221,9 @@ public class TUSL
 					}
 					n.setNext(next, newHeight);
 					previous.setNext(n, newHeight);
+					
+					System.out.println("Next " + n.getNext(newHeight));
+					System.out.println("Prev " + n.getPrev(newHeight));
 				}
 			}
 			else
@@ -266,6 +242,7 @@ public class TUSL
 	{
 		if(n.getHeight() > height)
 		{
+			System.out.println("subtracting height from " + n.getData());
 			for(int i = n.getHeight()-1; i > height; i--)
 			{
 				n.getPrev(i).setNext(n.getNext(i), i);
@@ -276,6 +253,7 @@ public class TUSL
 		}
 		else
 		{
+			System.out.println("Adding height to " + n.getData());
 			for(int i = 0; i < height; i++)
 			{
 				if(i >= n.getHeight())
@@ -311,10 +289,32 @@ public class TUSL
 	
 	public void newOrigin()
 	{
-		Random r = new Random();
+		//TODO uncomment me!!!!!!!!!!!!
+		/*Random r = new Random();
 		while(r.nextInt(10) < 9)//90% chance to move to a new origin node
 		{
 			origin = origin.getNext(0);
-		}
+		}*/
+	}
+	
+	public void print()
+	{
+		Node cur = origin;
+		do
+		{
+			System.out.print(cur.getData() + ": ");
+			for(int i = 0; i < cur.getHeight(); i++)
+			{
+				try
+				{
+					System.out.print(cur.getNext(i).getData() + " ");
+				}
+				catch(NullPointerException ignored){
+					System.out.print("n");
+				}
+			}
+			System.out.println();
+			cur = cur.getNext(0);
+		}while(cur != origin);
 	}
 }

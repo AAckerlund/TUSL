@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Node
 {
@@ -27,16 +28,13 @@ public class Node
 		}
 	}
 	
-	public void setNext(Node data, int level)
+	public boolean setNext(Node data, int level)
 	{
-		if(next.size() == level)
-		{
-			next.add(level, data);
-		}
-		else
-		{
-			next.set(level, data);
-		}
+		if(level >= next.size())
+			return false;
+		
+		next.set(level, data);
+		return false;
 	}
 	
 	public int getHeight()
@@ -77,5 +75,20 @@ public class Node
 	{
 		next.remove(next.size()-1);
 		prev.remove(prev.size()-1);
+	}
+	
+	public int determineHeight()
+	{
+		int height = 1;
+		Random r = new Random();
+		while(true)
+		{
+			if(r.nextInt(2) == 1)//50% chance to increase height
+			{
+				height++;
+			}
+			else
+				return height;
+		}
 	}
 }

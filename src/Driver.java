@@ -15,9 +15,7 @@ public class Driver
 			sl.print();
 		}
 		
-		System.out.println();
-		sl.print();
-		System.out.println();
+		/*System.out.println("--------------------------DELETING--------------------------");
 		
 		nums = new int[] {0, 6, 4, 6};
 		for(int i = 0; i < nums.length; i++)//delete some stuff
@@ -31,7 +29,8 @@ public class Driver
 			System.out.println();
 			sl.print();
 			System.out.println();
-		}
+		}*/
+		
 	}
 	public static void main(String[] args)
 	{
