@@ -216,10 +216,10 @@ public class TUSL
 					{
 						previous.getPrev(newHeight-1);
 					}
-					
+
 					n.setPrev(previous, newHeight);
 					previous.getNext(newHeight).setPrev(n, newHeight);
-					
+
 					Node next = n.getNext(newHeight-1);
 					while(next.getHeight() < newHeight && next != n)
 					{
@@ -227,7 +227,7 @@ public class TUSL
 					}
 					n.setNext(next, newHeight);
 					previous.setNext(n, newHeight);
-					
+
 					System.out.println("Next " + n.getNext(newHeight));
 					System.out.println("Prev " + n.getPrev(newHeight));
 				}
@@ -246,44 +246,63 @@ public class TUSL
 	
 	public void heightAdjust(Node n, int height)
 	{
+		if(n.getHeight() == height)
+		{
+			return;
+		}
 		if(n.getHeight() > height)
 		{
-			System.out.println("subtracting height from " + n.getData());
 			for(int i = n.getHeight()-1; i > height; i--)
 			{
-				n.getPrev(i).setNext(n.getNext(i), i);
-				n.getNext(i).setPrev(n.getPrev(i), i);
-				
-				n.removeNext();
+				if(n == n.getNext(i))
+				{
+					n.setPrev(null, i);
+					n.setNext(null, i);
+				}
+				else
+				{
+					n.getPrev(i).setNext(n.getNext(i), i);
+					n.getNext(i).setPrev(n.getPrev(i), i);
+				}
+				n.setNext(null, i);
+				n.setPrev(null, i);
+				n.removeElement(i);
 			}
 		}
 		else
 		{
-			System.out.println("Adding height to " + n.getData());
-			for(int i = 0; i < height; i++)
+			int oldHeight = n.getHeight();
+			n.createPointers(height);
+			for(int i = oldHeight; i < height; i++)
 			{
-				if(i >= n.getHeight())
+				Node previous = n.getPrev(i-1);
+				if(previous.getNext(i) == null)
 				{
-					Node previous = n.getPrev(i - 1);
-					while(previous.getHeight() < i && previous != n)//find a taller previous node
+					Node firstPrev = previous;
+					do
 					{
-						previous.getPrev(i - 1);
+						previous = previous.getPrev(i - 1);
 					}
-					
-					n.setPrev(previous, i);
-					previous.getNext(i).setPrev(n, i);
-					
-					Node next = n.getNext(i - 1);
-					while(next.getHeight() < i && next != n)
+					while(previous.getNext(i) == null && previous != firstPrev);
+
+					if(previous == firstPrev)//no other node has reached this height
 					{
-						next = next.getNext(i - 1);
+						previous = n;
 					}
-					n.setNext(next, i);
-					previous.setNext(n, i);
+				}
+				if(previous.getNext(i) == null)
+				{
+					n.setNext(n, i);
+					n.setPrev(n, i);
 				}
 				else
 				{
-					break;
+					n.setNext(previous.getNext(i), i);
+					n.setPrev(previous, i);
+
+					previous.getNext(i).setPrev(n, i);
+
+					previous.setNext(n, i);
 				}
 			}
 		}

@@ -5,7 +5,7 @@ public class Driver
 	public Driver()
 	{
 		sl = new TUSL();
-		int[] nums = {6, 7, 3, 2, 4, 1, 9, 0, 5, 8};
+		int[] nums = {6, 7, 3, 2, 4, 1, 9, 0, 5, 8, 8};
 		
 		for(int i = 0; i < nums.length; i++)//a bunch of inserts
 		{

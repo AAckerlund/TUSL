@@ -47,16 +47,13 @@ public class Node
 		return data;
 	}
 	
-	public void setPrev(Node n, int level)
+	public boolean setPrev(Node n, int level)
 	{
-		if(prev.size() == level)
-		{
-			prev.add(level, n);
-		}
-		else
-		{
-			prev.set(level, n);
-		}
+		if(level > prev.size())
+			return false;
+
+		prev.set(level, n);
+		return true;
 	}
 	
 	public Node getPrev(int level)
@@ -71,12 +68,12 @@ public class Node
 		}
 	}
 	
-	public void removeNext()
+	public void removeElement(int i)
 	{
-		next.remove(next.size()-1);
-		prev.remove(prev.size()-1);
+		next.remove(i);
+		prev.remove(i);
 	}
-	
+
 	public int determineHeight()
 	{
 		int height = 1;
@@ -94,10 +91,21 @@ public class Node
 
 	public void createPointers(int height)
 	{
-		for(int i = 1; i < height; i++)
+		if(next == null)
 		{
-			next.add(null);
-			prev.add(null);
+			for(int i = 1; i < height; i++)
+			{
+				next.add(null);
+				prev.add(null);
+			}
+		}
+		else
+		{
+			for(int i = next.size(); i < height; i++)
+			{
+				next.add(null);
+				prev.add(null);
+			}
 		}
 	}
 }
