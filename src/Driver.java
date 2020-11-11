@@ -6,7 +6,8 @@ public class Driver
 	{
 		sl = new TUSL();
 		int[] nums = {6, 7, 3, 2, 4, 1, 9, 0, 5, 8, 8};
-		
+
+		System.out.println("--------------------------INSERTS--------------------------");
 		for(int i = 0; i < nums.length; i++)//a bunch of inserts
 		{
 			int pick = nums[i];
@@ -15,12 +16,15 @@ public class Driver
 			sl.print();
 		}
 
+		System.out.println("--------------------------CONTAINS--------------------------");
 		System.out.println();
 		System.out.println(sl.contains(5));
 		System.out.println();
+		System.out.println(sl.contains(12));
+		System.out.println();
 		sl.print();
 
-		/*System.out.println("--------------------------DELETING--------------------------");
+		System.out.println("--------------------------DELETING--------------------------");
 		
 		nums = new int[] {0, 6, 4, 6};
 		for(int i = 0; i < nums.length; i++)//delete some stuff
@@ -34,7 +38,7 @@ public class Driver
 			System.out.println();
 			sl.print();
 			System.out.println();
-		}*/
+		}
 		
 	}
 	public static void main(String[] args)
