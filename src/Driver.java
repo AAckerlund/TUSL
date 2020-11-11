@@ -14,7 +14,12 @@ public class Driver
 			sl.insert(pick);
 			sl.print();
 		}
-		
+
+		System.out.println();
+		System.out.println(sl.contains(5));
+		System.out.println();
+		sl.print();
+
 		/*System.out.println("--------------------------DELETING--------------------------");
 		
 		nums = new int[] {0, 6, 4, 6};

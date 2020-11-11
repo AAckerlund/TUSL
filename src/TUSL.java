@@ -111,7 +111,7 @@ public class TUSL
 				origin = previous.getNext(0);
 		}
 		newOrigin();
-		heightAdjust(origin);
+		origin = heightAdjust(origin);
 	}
 	
 	/* op codes
@@ -140,13 +140,13 @@ public class TUSL
 				if(op == 0)
 				{
 					newOrigin();
-					heightAdjust(origin);
+					curr = heightAdjust(origin);
 					return curr;
 				}
 				else if(op == 1)
 				{
 					newOrigin();
-					heightAdjust(origin, curr.getHeight());
+					curr = heightAdjust(origin, curr.getHeight());
 					return null;
 				}
 				else if(op == 2)
@@ -199,60 +199,24 @@ public class TUSL
 		return search(data, 0) != null;
 	}
 	
-	public void heightAdjust(Node n)
+	public Node heightAdjust(Node n)
 	{
-		System.out.println("Adjusting " + n.getData());
-		int newHeight = 1;
+		int height = 1;
 		Random r = new Random();
-		while(true)
-		{
-			System.out.println(newHeight);
-			if(r.nextInt(2) == 1)//50% chance to increase height
-			{
-				if(newHeight > n.getHeight())
-				{
-					Node previous = n.getPrev(newHeight-1);
-					while(previous.getHeight() < newHeight && previous != n)//find a taller previous node
-					{
-						previous.getPrev(newHeight-1);
-					}
-
-					n.setPrev(previous, newHeight);
-					previous.getNext(newHeight).setPrev(n, newHeight);
-
-					Node next = n.getNext(newHeight-1);
-					while(next.getHeight() < newHeight && next != n)
-					{
-						next = next.getNext(newHeight-1);
-					}
-					n.setNext(next, newHeight);
-					previous.setNext(n, newHeight);
-
-					System.out.println("Next " + n.getNext(newHeight));
-					System.out.println("Prev " + n.getPrev(newHeight));
-				}
-			}
-			else
-			{
-				break;
-			}
-			newHeight++;
-		}
-		if(origin == null)
-		{
-			origin = n;
-		}
+		while(r.nextInt(2) == 1)
+			height++;
+		return heightAdjust(n, height);
 	}
 	
-	public void heightAdjust(Node n, int height)
+	public Node heightAdjust(Node n, int height)
 	{
 		if(n.getHeight() == height)
 		{
-			return;
+			return n;
 		}
 		if(n.getHeight() > height)
 		{
-			for(int i = n.getHeight()-1; i > height; i--)
+			for(int i = n.getHeight()-1; i >= height; i--)
 			{
 				if(n == n.getNext(i))
 				{
@@ -310,6 +274,7 @@ public class TUSL
 		{
 			origin = n;
 		}
+		return n;
 	}
 	
 	public void newOrigin()
