@@ -40,47 +40,53 @@ public class TUSL
 	
 	private void doInsert(Node toInsert, Node previous)
 	{
-		System.out.println("cur " + toInsert.getData() + ", prev " + previous.getData());
+		//System.out.println("cur " + toInsert.getData() + ", prev " + previous.getData());
 		//determine node height and set all nexts
 		int level = toInsert.determineHeight();
+		toInsert.createPointers(level);
+
 		toInsert.setNext(previous.getNext(0), 0);//all nodes must be in the bottom level
 		toInsert.setPrev(previous, 0);
 		
 		previous.getNext(0).setPrev(toInsert, 0);
 		previous.setNext(toInsert, 0);
-		
 		for(int i = 1; i < level; i++)
 		{
-			if(i >= previous.getHeight())
+			if(previous.getNext(i) == null)
 			{
 				Node firstPrev = previous;
 				do
 				{
 					previous = previous.getPrev(i - 1);
-					
-					System.out.println(previous.getData());
 				}
-				while(i >= previous.getHeight() && previous != firstPrev);
-				System.out.println("New previous was needed " + previous.getData());
+				while(previous.getNext(i) == null && previous != firstPrev);
+
+				if(previous == firstPrev)//no other node has reached this height
+				{
+					previous = toInsert;
+				}
 			}
-			System.out.println("using " + previous.getData() + " at height " + (i));
-			toInsert.setNext(previous.getNext(i), i);
-			toInsert.setPrev(previous, i);
-			
-			previous.setNext(toInsert, i);
-			
-			previous.getNext(i).setPrev(toInsert, i);
+			if(previous.getNext(i) == null)
+			{
+				toInsert.setNext(toInsert, i);
+				toInsert.setPrev(toInsert, i);
+			}
+			else
+			{
+				toInsert.setNext(previous.getNext(i), i);
+				toInsert.setPrev(previous, i);
+
+				previous.getNext(i).setPrev(toInsert, i);
+
+				previous.setNext(toInsert, i);
+			}
 		}
-		if(origin == null)
-		{
-			origin = toInsert;
-		}
-		else if(toInsert.getData() < origin.getData())
+		if(origin == null || toInsert.getData() < origin.getData())
 		{
 			origin = toInsert;
 		}
 		newOrigin();
-		System.out.println("height " + level + " reached");
+		//System.out.println("height " + (level+1) + " reached");
 	}
 	
 	public boolean delete(int target)
@@ -289,12 +295,11 @@ public class TUSL
 	
 	public void newOrigin()
 	{
-		//TODO uncomment me!!!!!!!!!!!!
-		/*Random r = new Random();
+		Random r = new Random();
 		while(r.nextInt(10) < 9)//90% chance to move to a new origin node
 		{
 			origin = origin.getNext(0);
-		}*/
+		}
 	}
 	
 	public void print()
@@ -310,7 +315,7 @@ public class TUSL
 					System.out.print(cur.getNext(i).getData() + " ");
 				}
 				catch(NullPointerException ignored){
-					System.out.print("n");
+					System.out.print("n ");
 				}
 			}
 			System.out.println();

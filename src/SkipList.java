@@ -1,14 +1,12 @@
-import java.util.Random;
-
 public class SkipList
 {
 	private Node origin;
-	
+
 	public SkipList()
 	{
 		origin = null;
 	}
-	
+
 	public float insertTimed(int data)
 	{
 		float delta = System.nanoTime();
@@ -16,7 +14,7 @@ public class SkipList
 		delta = System.nanoTime() - delta;
 		return delta;
 	}
-	
+
 	public float deleteTimed(int data)
 	{
 		float delta = System.nanoTime();
@@ -24,7 +22,7 @@ public class SkipList
 		delta = System.nanoTime() - delta;
 		return delta;
 	}
-	
+
 	public float searchTimed(int data)
 	{
 		float delta = System.nanoTime();
@@ -32,70 +30,67 @@ public class SkipList
 		delta = System.nanoTime() - delta;
 		return delta;
 	}
-	
+
 	public void insert(int data)
 	{
 		search(data, 1);
 	}
-	
+
 	private void doInsert(Node toInsert, Node previous)
 	{
-		System.out.println(toInsert.getData() + ", " + previous.getData());
-		Random r = new Random();
+		//System.out.println("cur " + toInsert.getData() + ", prev " + previous.getData());
 		//determine node height and set all nexts
+		int level = toInsert.determineHeight();
+		toInsert.createPointers(level);
+
 		toInsert.setNext(previous.getNext(0), 0);//all nodes must be in the bottom level
 		toInsert.setPrev(previous, 0);
-		
+
 		previous.getNext(0).setPrev(toInsert, 0);
 		previous.setNext(toInsert, 0);
-		
-		int tmpLevel = 1;
-		while(true)
+		for(int i = 1; i < level; i++)
 		{
-			if(r.nextInt(2) == 1)//50% chance to increase height
+			if(previous.getNext(i) == null)
 			{
-				if(toInsert.getData() == 6)
-					break;
-				if(toInsert.getHeight() >= previous.getHeight())
+				Node firstPrev = previous;
+				do
 				{
-					Node firstPrev = previous;
-					do
-					{
-						previous = previous.getPrev(tmpLevel-1);
-					}while(toInsert.getHeight() >= previous.getHeight() && previous != firstPrev);
-					if(previous == firstPrev)//nothing taller was found so link the node to itself
-						previous = toInsert;
-					
+					previous = previous.getPrev(i - 1);
 				}
-				toInsert.setNext(previous.getNext(tmpLevel), tmpLevel);
-				toInsert.setPrev(previous, tmpLevel);
-				
-				previous.setNext(toInsert, tmpLevel);
-				
-				previous.getNext(tmpLevel).setPrev(toInsert, tmpLevel);
+				while(previous.getNext(i) == null && previous != firstPrev);
+
+				if(previous == firstPrev)//no other node has reached this height
+				{
+					previous = toInsert;
+				}
+			}
+			if(previous.getNext(i) == null)
+			{
+				toInsert.setNext(toInsert, i);
+				toInsert.setPrev(toInsert, i);
 			}
 			else
 			{
-				break;
+				toInsert.setNext(previous.getNext(i), i);
+				toInsert.setPrev(previous, i);
+
+				previous.getNext(i).setPrev(toInsert, i);
+
+				previous.setNext(toInsert, i);
 			}
-			tmpLevel++;
 		}
-		if(origin == null)
+		if(origin == null || toInsert.getData() < origin.getData())
 		{
 			origin = toInsert;
 		}
-		else if(toInsert.getData() < origin.getData())
-		{
-			origin = toInsert;
-		}
-		//System.out.println("height " + (tmpLevel-1) + " reached");
+		//System.out.println("height " + (level+1) + " reached");
 	}
-	
+
 	public boolean delete(int target)
 	{
 		return search(target, 2) != null;
 	}
-	
+
 	private void doDelete(Node previous, Node toDelete, int height)
 	{
 		do
@@ -113,7 +108,7 @@ public class SkipList
 				origin = previous.getNext(0);
 		}
 	}
-	
+
 	/* op codes
 	op = 0 - searching for a node
 	op = 1 - inserting a node
@@ -138,9 +133,13 @@ public class SkipList
 			if(curr.getData() == data)//found node
 			{
 				if(op == 0)
+				{
 					return curr;
+				}
 				else if(op == 1)
+				{
 					return null;
+				}
 				else if(op == 2)
 				{
 					doDelete(curr.getPrev(level), curr, level);
@@ -185,41 +184,28 @@ public class SkipList
 			}
 		}
 	}
-	
+
 	public boolean contains(int data)
 	{
 		return search(data, 0) != null;
 	}
-	
-	/*public Node findTallerPrev(Node start)
-	{
-		int height = start.getHeight();
-		Node prev = start.getPrev();
-		while(true)
-		{
-			if(prev.getHeight() >= height)
-				return prev;
-			else if(prev == start)//we have checked everything
-				return null;
-			prev = prev.getPrev();
-		}
-	}*/
-	
+
 	public void print()
 	{
 		Node cur = origin;
 		do
 		{
-			System.out.println(cur.getData() + " points to " + cur.getHeight() + " elements");
+			System.out.print(cur.getData() + ": ");
 			for(int i = 0; i < cur.getHeight(); i++)
 			{
 				try
 				{
-					System.out.println("\t" + cur.getNext(i).getData() + " at height " + i);
+					System.out.print(cur.getNext(i).getData() + " ");
 				}
-				catch(NullPointerException ignored){}
+				catch(NullPointerException ignored){
+					System.out.print("n ");
+				}
 			}
-			//System.out.println(cur.getData() + " reaches " + (cur.getHeight()-1) + " height");
 			System.out.println();
 			cur = cur.getNext(0);
 		}while(cur != origin);

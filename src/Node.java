@@ -30,11 +30,11 @@ public class Node
 	
 	public boolean setNext(Node data, int level)
 	{
-		if(level >= next.size())
+		if(level > next.size())
 			return false;
 		
 		next.set(level, data);
-		return false;
+		return true;
 	}
 	
 	public int getHeight()
@@ -89,6 +89,15 @@ public class Node
 			}
 			else
 				return height;
+		}
+	}
+
+	public void createPointers(int height)
+	{
+		for(int i = 1; i < height; i++)
+		{
+			next.add(null);
+			prev.add(null);
 		}
 	}
 }
