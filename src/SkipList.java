@@ -1,6 +1,7 @@
 public class SkipList
 {
 	private Node origin;
+	public int steps;
 
 	public SkipList()
 	{
@@ -41,6 +42,7 @@ public class SkipList
 		//System.out.println("cur " + toInsert.getData() + ", prev " + previous.getData());
 		//determine node height and set all nexts
 		int level = toInsert.determineHeight();
+		steps += 1;
 		toInsert.createPointers(level);
 
 		toInsert.setNext(previous.getNext(0), 0);//all nodes must be in the bottom level
@@ -116,71 +118,103 @@ public class SkipList
 	 */
 	public Node search(int data, int op)
 	{
+		steps = 0;
 		if(origin == null)//the skip list is empty
 		{
+			steps += 1;
 			if(op == 1)
 			{
+				steps += 1;
 				Node tmp = new Node(data);
+				steps += 1;
 				doInsert(tmp, tmp);
+				steps += 1;
 				return null;
 			}
 			return null;
 		}
 		Node curr = origin;
+		steps += 1;
 		int level = curr.getHeight()-1;//height list is 0 indexed so subtract 1
+		steps += 1;
 		while(true)//iterate through the list and search for where to insert
 		{
+			steps += 1;
 			if(curr.getData() == data)//found node
 			{
+				steps += 1;
 				if(op == 0)
 				{
+					steps += 1;
 					return curr;
 				}
 				else if(op == 1)
 				{
+					steps += 1;
 					return null;
 				}
 				else if(op == 2)
 				{
+					steps += 1;
 					doDelete(curr.getPrev(level), curr, level);
+					steps += 1;
 					return curr;
 				}
 			}
 			else if(curr.getNext(level) == null)//nothing else on this height, so drop down a level and keep checking
 			{
+				steps += 1;
 				level--;
 			}
 			else if(curr.getData() < data && curr.getNext(level).getData() > data)//data is between curr and curr.getNext()
 			{
-				if(level > 0)//try and drop down a level, if we can't return null
+				steps += 1;
+				if(level > 0) {//try and drop down a level, if we can't return null
+					steps += 1;
 					level--;
+				}
 				else//level == 0
 				{
+					steps += 1;
 					if(op == 1)
 					{
+						steps += 1;
 						doInsert(new Node(data), curr);
+						steps += 1;
 					}
 					return null;
 				}
 			}
 			else if((curr.getData() < data || curr.getNext(level).getData() > data) && curr.getNext(level).getData() <= curr.getData())//data is greater than greatest node or less than smallest node and curr.getNext() loops back to the start of the list
 			{
-				if(level > 0)
+				steps += 1;
+				if(level > 0) {
+					steps += 1;
 					level--;
+					steps += 1;
+				}
 				else//level == 0
 				{
+					steps += 1;
 					if(op == 1)
 					{
+						steps += 1;
 						doInsert(new Node(data), curr);
+						steps += 1;
 					}
 					return null;
 				}
 			}
 			else
 			{
-				while(curr == curr.getNext(level))//no point in checking the same node multiple times so drop down levels until node.next() gives a different node.
+				steps += 1;
+				while(curr == curr.getNext(level)) {//no point in checking the same node multiple times so drop down levels until node.next() gives a different node.
+					steps += 1;
 					level--;
+					steps += 1;
+				}
 				curr = curr.getNext(level);
+				steps += 1;
 			}
 		}
 	}
